@@ -179,10 +179,13 @@ footer>p{
         margin-top: -2.5em;
     }
 
-        nav {
+
+
+
+    nav {
         margin-left: 2%;
         border-radius: 8px;
-        padding: 2px;
+        padding: 6px;
         box-shadow: 2px 2px 0px grey;
             }
 
@@ -192,7 +195,7 @@ footer>p{
     }
 
     div {
-        width: 75%;
+        width: 70%;
     }
 
     #Video {
