@@ -1,0 +1,77 @@
+--1-Affichage des marques des avions (résultat attendu : 2 lignes)
+select *
+from aircraft_brands;
+
+
+--2-Affichage des modèles d'avion Boeing (Résultat attendu : 14 lignes)
+select *
+from aircraft_models
+where brand_idx = 2;
+
+
+--3-Affichage de toutes les villes et leurs pays (Résultat attendu : 400 lignes)
+select cities.name, c.name
+from cities
+         join countries c on cities.country_idx = c.id;
+
+--4- Affichage des avions AIRBUS ayant plus de 300 places triés par nb de places décroissant (Résultat attendu : 63 lignes)
+select name, seats_nb
+from aircrafts
+         join aircraft_models am on aircrafts.model_idx = am.id
+where seats_nb > 300
+  and brand_idx = 1
+order by seats_nb desc;
+
+
+--5- Affichage des vols intérieurs (même pays) (Résultat attendu : 41 lignes)
+
+select flights.id, c2.name NOM_VILLE_DEPART, c1.name NOM_VILLE_ARRIVEE, c.name AEROPORT
+from flights
+         join cities c1 on flights.to_city = c1.id
+         join cities c2 on flights.from_city = c2.id
+         join countries c on c1.country_idx = c.id
+    and c1.country_idx = c2.country_idx;
+
+
+--6- Affichage des vols intérieurs plus longs que 5h triés par durée décroissante (Résultat attendu : 17 lignes)
+select flights.id, std_duration_sec DURATION_SEC, ((flights.std_duration_sec / 60) / 60) DURATION_HEURE
+from flights
+         join cities c1 on flights.to_city = c1.id
+         join cities c2 on flights.from_city = c2.id
+         join countries c on c1.country_idx = c.id
+    and c1.country_idx = c2.country_idx
+    and ((flights.std_duration_sec / 60) / 60) >= 5
+order by std_duration_sec desc;
+
+
+--7- Afficher les 5 vols ayant le plus de personnel navigant (Résultat attendu : 5 lignes)
+select flight_idx, count(employee_idx)
+from flights_employees
+         join employees on employees.id = flights_employees.employee_idx
+group by flight_idx
+order by count(employee_idx) desc
+limit 5;
+
+
+--8- Afficher les personnes travaillant moins d'une heure dans la compagnie (Résultat attendu : 32 lignes)
+select first_name, last_name, sum((std_duration_sec / 60) / 60)
+from employees
+         join flights_employees fe on employees.id = fe.employee_idx
+         join flights f on fe.flight_idx = f.id
+--and employees.id =431
+group by first_name, last_name
+having sum((std_duration_sec / 60) / 60) < 1;
+
+
+--9- Afficher les durées des vols intérieur en utilisant intersect (Résultat attendu : 41 lignes)
+select flights.id, c.name AEROPORT
+from flights
+         join cities c1  on flights.from_city = c1.id
+         join countries c on c1.country_idx = c.id
+--where flights.id = 200
+intersect
+select flights.id, c.name AEROPORT
+from flights
+         join cities c1  on flights.to_city = c1.id
+         join countries c on c1.country_idx = c.id
+--where flights.id = 200
